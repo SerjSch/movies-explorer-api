@@ -1,44 +1,25 @@
-// const usersRouter = require('express').Router();
-// const { celebrate, Joi } = require('celebrate');
-// const validator = require('validator');
+const usersRouter = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+const { getAuthUser, updateUserInfo } = require('../controllers/users');
 
-// const {
-//   getUsers,
-//   getUser,
-//   updateUserInfo,
-//   updateUserAvatar,
-//   getAuthUser,
-// } = require('../controllers/users');
+// # возвращает информацию о пользователе (email и имя)
+// GET /users/me
+usersRouter.get('/users/me', getAuthUser);
 
-// usersRouter.get('/users', getUsers);
-// usersRouter.get('/users/me', getAuthUser);
+// # обновляет информацию о пользователе (email и имя)
+// PATCH /users/me
+usersRouter.patch(
+  '/users/me',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      email: Joi.string().email({
+        minDomainSegments: 2,
+        tlds: { allow: false },
+      }),
+    }),
+  }),
+  updateUserInfo,
+);
 
-// usersRouter.get('/users/:userId', celebrate({
-//   params: Joi.object().keys({
-//     id: Joi.string().required().hex().length(24),
-//   }),
-// }), getUser);
-
-// ///
-// usersRouter.patch('/users/me', celebrate({
-//   body: Joi.object().keys({
-//     name: Joi.string().required().min(2).max(30),
-//     about: Joi.string().required().min(2).max(30),
-//   }),
-// }), updateUserInfo);
-
-// usersRouter.patch('/users/me/avatar', celebrate({
-//   body: Joi.object().keys({
-//     avatar: Joi.string().required().custom((yourUrl, checker) => {
-//       if (validator.isURL(yourUrl, { require_protocol: true })) {
-//         return yourUrl;
-//       }
-//       return checker.message('Некорректный url-адрес');
-//     })
-//       .messages({
-//         'Joi.any().required()': 'Введите ссылку на аватар',
-//       }),
-//   }),
-// }), updateUserAvatar);
-
-// module.exports = usersRouter;
+module.exports = usersRouter;
