@@ -14,8 +14,8 @@
 `npm run start` — запускает сервер  
 `npm run dev` — запускает сервер с hot-reload
 
-https://serjo.nomoredomains.work/
+https://serjo.nomoredomains.club/
 
-https://api.serjo.nomoredomains.monster/
+https://api.serjo.nomoredomains.club/
 
-84.201.166.64
+84.201.154.157
