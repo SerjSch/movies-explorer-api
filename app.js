@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
@@ -37,29 +38,36 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-    name: Joi.string().min(2).max(30),
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+      name: Joi.string().min(2).max(30),
+    }),
   }),
-}), createUser);
+  createUser,
+);
 
 // # проверяет переданные в теле почту и пароль
 // # и возвращает JWT
 // POST /signin
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
   }),
-}), login);
+  login,
+);
 app.use(auth);
 app.use('/', usersRouter); // запускаем
 app.use('/', moviesRouter); // запускаем
 
 // обработчики ошибок
-// eslint-disable-next-line no-unused-vars
 app.get('*', (req, res) => {
   throw new NotFoundError('404 - Запрашиваемый ресурс не найден');
 });
@@ -69,18 +77,17 @@ app.use(errorLogger); // подключаем логгер ошибок
 app.use(errors()); // обработчик ошибок celebrate
 
 // здесь обрабатываем все ошибки
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500 ? '500 - ошибка по-умолчанию, внутренняя ошибка сервера' : message,
-    });
+  res.status(statusCode).send({
+    message:
+      statusCode === 500
+        ? '500 - ошибка по-умолчанию, внутренняя ошибка сервера'
+        : message,
+  });
 });
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
-  // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });

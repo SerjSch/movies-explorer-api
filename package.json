@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "npx eslint"
+    "lint": "npx eslint ./"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/SerjSch/movies-explorer-api#readme",
   "devDependencies": {
-    "eslint": "^7.29.0",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4"
   },
