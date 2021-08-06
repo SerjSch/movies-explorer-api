@@ -7,7 +7,9 @@ const {
   createMovie,
   deleteMovie,
 } = require('../controllers/movies');
+const auth = require('../middlewares/auth');
 
+moviesRouter.use(auth);
 // # возвращает все сохранённые пользователем фильмы
 // GET /movies
 moviesRouter.get('/movies', getMovies);
@@ -51,7 +53,7 @@ moviesRouter.post(
       thumbnail: Joi.string()
         .required()
         .custom((thumbnailUrl, checker) => {
-          if (thumbnailUrl.isURL(thumbnailUrl, { require_protocol: true })) {
+          if (validator.isURL(thumbnailUrl, { require_protocol: true })) {
             return thumbnailUrl;
           }
           return checker.message('Некорректный url-адрес');
@@ -59,7 +61,7 @@ moviesRouter.post(
         .messages({
           'Joi.any().required()': 'Введите ссылку на thumbnail',
         }),
-      movieId: Joi.string().required().hex().length(24),
+      movieId: Joi.number().required(),
     }),
   }),
   createMovie,

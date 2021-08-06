@@ -2,6 +2,7 @@ const Movie = require('../models/movie');
 const NotFoundError = require('../errors/404-not-found-err');
 const BadRequestError = require('../errors/400-bad-request-err');
 const ForbiddenError = require('../errors/403-forbidden-err');
+const ConflictError = require('../errors/409-conflict-err');
 
 const getMovies = (req, res, next) => {
   const ownerId = req.user._id;
@@ -39,13 +40,17 @@ const createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   })
-    .then((card) => res.status(200).send(card))
+    .then((movie) => res.status(200).send(movie))
     .catch((error) => {
       if (error.name === 'CastError') {
         throw new BadRequestError(
           '400 — Переданы некорректные данные при создании фильма.',
         );
       }
+      if (error.name === 'MongoError' || error.code === '11000') {
+        throw new ConflictError('Конфликт ошибка MongoError');
+      }
+      throw error;
     })
     .catch(next);
 };
@@ -54,11 +59,12 @@ const deleteMovie = (req, res, next) => {
   const owner = req.user._id;
   Movie.findById(req.params.movieId)
     .orFail(new Error('NotFound'))
-    .then((card) => {
-      if (card.owner.toString() !== owner) {
+    .then((movie) => {
+      if (movie.owner.toString() !== owner) {
         throw new ForbiddenError('403 — Это не ваш фильм');
+      } else {
+        return movie.remove().then(() => res.send({ message: 'Фильм удален' }));
       }
-      Movie.findByIdAndDelete(req.params.movieId).then(() => res.status(200).send({ message: 'Фильм удален' }));
     })
     .catch((error) => {
       if (error.name === 'CastError') {

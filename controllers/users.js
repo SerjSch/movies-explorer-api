@@ -35,6 +35,7 @@ const createUser = (req, res, next) => {
       if (error.name === 'MongoError' || error.code === '11000') {
         throw new ConflictError('Конфликт ошибка MongoError');
       }
+      throw error;
     })
     .catch(next);
 };
@@ -60,7 +61,7 @@ const login = (req, res, next) => {
 /// /////////////   Get   //////////////////////
 /// АВТОРИЗАЦИЯ
 const getAuthUser = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .orFail(new Error('NotFound'))
     .then((user) => res.status(200).send(user))
     .catch(next);
@@ -71,8 +72,8 @@ const updateUserInfo = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     {
+      email: req.body.email,
       name: req.body.name,
-      about: req.body.about,
     },
     { new: true, runValidators: true },
   )
@@ -88,6 +89,7 @@ const updateUserInfo = (req, res, next) => {
           '404 — Пользователь по указанному _id не найден',
         );
       }
+      throw error;
     })
     .catch(next);
 };

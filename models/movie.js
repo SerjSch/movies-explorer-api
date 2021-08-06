@@ -68,9 +68,9 @@ const movieSchema = mongoose.Schema({
     ref: user,
   },
   movieId: {
-    type: String,
-    // type: MoviesExplorer.ObjectId,
+    type: Number,
     required: true,
+    unique: true,
   },
   nameRU: {
     type: String,
